@@ -17,6 +17,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\UrlGeneratorInterface;
 use App\Enum\BookCondition;
+use App\Enum\PromotionStatus;
 use App\Repository\BookRepository;
 use App\State\Processor\BookPersistProcessor;
 use App\State\Processor\BookRemoveProcessor;
@@ -193,9 +194,10 @@ class Book
     public ?int $rating = null;
 
     /**
-     * @ORM\Column(type="boolean", options={"default": false})
+     * @ORM\Column(type="string", length=10)
+     * @Assert\Choice(callback={"App\Enum\PromotionStatus", "values"})
      */
-    public bool $isPromoted = false;
+    public ?string $promotionStatus = PromotionStatus::None->value;
 
     public function __construct()
     {
@@ -205,5 +207,16 @@ class Book
     public function getId(): ?Uuid
     {
         return $this->id;
+    }
+
+    public function getPromotionStatus(): ?string
+    {
+        return $this->promotionStatus;
+    }
+
+    public function setPromotionStatus(PromotionStatus $promotionStatus): self
+    {
+        $this->promotionStatus = $promotionStatus->value;
+        return $this;
     }
 }
