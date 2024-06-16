@@ -193,11 +193,35 @@ class Book
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?int $rating = null;
 
+
+
     /**
+     * The promotional status
      * @ORM\Column(type="string", length=10)
-     * @Assert\Choice(callback={"App\Enum\PromotionStatus", "values"})
+     * * @Assert\Choice(callback={"App\Enum\PromotionStatus", "values"})
+     *
+     * @see https://schema.org/aggregateRating
      */
+    #[ApiProperty(
+        types: ['https://schema.org/aggregateRating'],
+        example: 1
+    )]
+    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?string $promotionStatus = PromotionStatus::None->value;
+
+    /**
+     * The slug of the book
+     */
+    #[ApiProperty(
+        types: ['https://schema.org/itemOffered', 'https://purl.org/dc/terms/BibliographicResource'],
+        example: 'https://openlibrary.org/books/OL2055137M.json'
+    )]
+    #[Assert\NotBlank(allowNull: false)]
+    #[Assert\Url(protocols: ['https'])]
+    #[Assert\Regex(pattern: '/^https:\/\/openlibrary.org\/books\/OL\d+[A-Z]{1}\.json$/')]
+    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Book:write'])]
+    #[ORM\Column(unique: true)]
+    public ?string $slug = null;
 
     public function __construct()
     {

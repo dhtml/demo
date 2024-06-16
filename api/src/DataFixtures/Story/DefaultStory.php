@@ -9,6 +9,7 @@ use App\DataFixtures\Factory\BookmarkFactory;
 use App\DataFixtures\Factory\ReviewFactory;
 use App\DataFixtures\Factory\UserFactory;
 use App\Enum\BookCondition;
+use App\Enum\PromotionStatus;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Zenstruck\Foundry\Story;
 
@@ -26,6 +27,8 @@ final class DefaultStory extends Story
             'book' => 'https://openlibrary.org/books/OL2055137M.json',
             'title' => 'Hyperion',
             'author' => 'Dan Simmons',
+            "slug" => "book-" . $this->getBookId(),
+            "promotion_status" => PromotionStatus::None
         ]);
 
         // Default book has reviews (new users are created)
@@ -39,6 +42,8 @@ final class DefaultStory extends Story
         $data = $this->decoder->decode(file_get_contents(__DIR__ . '/../books.json'), 'json');
         foreach ($data as $datum) {
             $book = BookFactory::createOne($datum + [
+                "slug" => "book-" . $this->getBookId(),
+                "promotion_status" => PromotionStatus::None,
                 'condition' => BookCondition::cases()[array_rand(BookCondition::cases())],
             ]);
 
@@ -87,5 +92,11 @@ final class DefaultStory extends Story
 
         // Create admin user
         UserFactory::createOneAdmin();
+    }
+
+    protected function getBookId() {
+        static $lastId = 1;
+        $lastId*=10;
+        return $lastId;
     }
 }

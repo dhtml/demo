@@ -6,6 +6,7 @@ namespace App\DataFixtures\Factory;
 
 use App\Entity\Book;
 use App\Enum\BookCondition;
+use App\Enum\PromotionStatus;
 use Doctrine\ORM\EntityRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
@@ -86,6 +87,8 @@ final class BookFactory extends ModelFactory
                     $book->book = 'https://openlibrary.org/books/OL' . self::faker()->unique()->randomNumber(7, true) . 'M.json';
                     $book->title ??= self::faker()->text();
                     $book->author ??= self::faker()->name();
+                    $book->slug = "book-" . $this->getBookId();
+                    $book->promotion_status = PromotionStatus::Basic;
 
                     return;
                 }
@@ -96,7 +99,9 @@ final class BookFactory extends ModelFactory
                 });
                 if ($data) {
                     $datum = current($data);
+                    $book->promotion_status = PromotionStatus::Pro;
                     $book->title ??= $datum['title'];
+                    $book->slug = "book-" . $this->getBookId();
                     // A book can have no author
                     $book->author ??= $datum['author'] ?? self::faker()->name();
 
@@ -113,5 +118,11 @@ final class BookFactory extends ModelFactory
     protected static function getClass(): string
     {
         return Book::class;
+    }
+
+    protected function getBookId() {
+        static $lastId = 100;
+        $lastId*=5;
+        return $lastId;
     }
 }
