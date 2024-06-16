@@ -37,10 +37,3 @@ enum BookCondition: string
     /** Indicates that the item is used. */
     case UsedCondition = 'https://schema.org/UsedCondition';
 }
-
-enum PromotionStatus: string
-{
-    case None = 'None';
-    case Basic = 'Basic';
-    case Pro = 'Pro';
-}
