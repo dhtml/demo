@@ -193,8 +193,6 @@ class Book
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?int $rating = null;
 
-
-
     /**
      * The promotional status
      * @ORM\Column(type="string", length=10)
@@ -202,25 +200,32 @@ class Book
      *
      * @see https://schema.org/aggregateRating
      */
+    #[ApiFilter(SearchFilter::class, strategy: SearchFilterInterface::STRATEGY_EXACT)]
     #[ApiProperty(
-        types: ['https://schema.org/aggregateRating'],
-        example: 1
+        required: true,
+        example: "Basic",
+        iris: ['https://schema.org/name']
     )]
-    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
-    public ?string $promotionStatus = PromotionStatus::None->value;
+    #[Assert\NotNull]
+    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Book:write'])]
+    #[ORM\Column(name: '`promotion_status`', type: 'string', enumType: PromotionStatus::class)]
+    public ?PromotionStatus $promotionStatus = null;
+
 
     /**
      * The slug of the book
      */
+    #[ApiFilter(SearchFilter::class, strategy: 'i' . SearchFilterInterface::STRATEGY_PARTIAL)]
     #[ApiProperty(
-        types: ['https://schema.org/itemOffered', 'https://purl.org/dc/terms/BibliographicResource'],
-        example: 'https://openlibrary.org/books/OL2055137M.json'
+        required: true,
+        example: 'book-1',
+        iris: ['https://schema.org/name']
     )]
     #[Assert\NotBlank(allowNull: false)]
-    #[Assert\Url(protocols: ['https'])]
-    #[Assert\Regex(pattern: '/^https:\/\/openlibrary.org\/books\/OL\d+[A-Z]{1}\.json$/')]
+    #[Assert\Length(min: 5)]
+    #[Assert\Regex(pattern: '/^[a-z0-9-]+$/')]
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Book:write'])]
-    #[ORM\Column(unique: true)]
+    #[ORM\Column(name: '`slug`', type: 'string', unique: true)]
     public ?string $slug = null;
 
     public function __construct()
@@ -233,14 +238,4 @@ class Book
         return $this->id;
     }
 
-    public function getPromotionStatus(): ?string
-    {
-        return $this->promotionStatus;
-    }
-
-    public function setPromotionStatus(PromotionStatus $promotionStatus): self
-    {
-        $this->promotionStatus = $promotionStatus->value;
-        return $this;
-    }
 }
