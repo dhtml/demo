@@ -192,6 +192,11 @@ class Book
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?int $rating = null;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    public bool $isPromoted = false;
+
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
