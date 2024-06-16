@@ -207,7 +207,7 @@ class Book
         iris: ['https://schema.org/name']
     )]
     #[Assert\NotNull]
-    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Book:write'])]
+    #[Groups(groups: ['Book:read:admin', 'Book:write'])]
     #[ORM\Column(name: '`promotion_status`', type: 'string', enumType: PromotionStatus::class)]
     public ?PromotionStatus $promotionStatus = null;
 
@@ -224,7 +224,7 @@ class Book
     #[Assert\NotBlank(allowNull: false)]
     #[Assert\Length(min: 5)]
     #[Assert\Regex(pattern: '/^[a-z0-9-]+$/')]
-    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Book:write'])]
+    #[Groups(groups: ['Book:read', 'Book:read:admin', 'Book:write'])]
     #[ORM\Column(name: '`slug`', type: 'string', unique: true)]
     public ?string $slug = null;
 
